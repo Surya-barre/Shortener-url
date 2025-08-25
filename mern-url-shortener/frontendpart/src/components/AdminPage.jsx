@@ -6,7 +6,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/admin/list")
+      .get("https://shortener-url-jxfk.onrender.com/api/admin/list")
       .then((res) => setUrls(res.data))
       .catch((err) => console.error(err));
   }, []);
