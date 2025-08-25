@@ -8,8 +8,9 @@ app.use(cors());
 app.use(express.json());
 
 mongoose.connect("mongodb://127.0.0.1:27017/urlshortener")
-  .then(() => console.log("MongoDB connected"))
+  .then(() => console.log("MongoDB connected successfully"))
   .catch(err => console.error(err));
+
 
 app.use("/api", urlRoutes);
 
