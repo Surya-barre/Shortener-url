@@ -3,10 +3,11 @@ import axios from "axios";
 
 export default function AdminPage() {
   const [urls, setUrls] = useState([]);
+  //shortener-url-jxfk.onrender.com
 
-  useEffect(() => {
+  https: useEffect(() => {
     axios
-      .get("https://shortener-url-jxfk.onrender.com/api/admin/list")
+      .get("http://localhost:5000/api/admin/list")
       .then((res) => setUrls(res.data))
       .catch((err) => console.error(err));
   }, []);

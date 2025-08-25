@@ -31,6 +31,7 @@ export const shortenUrl = async (req, res) => {
 
 export const redirectUrl = async (req, res) => {
   const { shortcode } = req.params;
+//   console.log(req.params)
   try {
     const urlEntry = await Url.findOne({ shortCode: shortcode });
     if (!urlEntry) return res.status(404).json({ error: "URL not found" });
@@ -45,6 +46,7 @@ export const redirectUrl = async (req, res) => {
 
 // (Bonus) admin list
 export const listUrls = async (req, res) => {
+     
   try {
     const urls = await Url.find().sort({ createdAt: -1 });
     res.json(urls);

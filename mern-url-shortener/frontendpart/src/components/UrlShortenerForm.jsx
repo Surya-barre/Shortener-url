@@ -6,9 +6,10 @@ export default function UrlShortenerForm() {
   const [shortUrl, setShortUrl] = useState("");
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    //shortener-url-jxfk.onrender.com
+    https: e.preventDefault();
     try {
-      const res = await axios.post("https://shortener-url-jxfk.onrender.com/api/shorten", {
+      const res = await axios.post("http://localhost:5000/api/shorten", {
         longUrl,
       });
       setShortUrl(res.data.shortUrl);
