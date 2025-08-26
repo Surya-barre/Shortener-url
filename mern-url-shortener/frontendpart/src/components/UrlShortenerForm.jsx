@@ -9,12 +9,9 @@ export default function UrlShortenerForm() {
     //https://shortener-url-jxfk.onrender.com
     e.preventDefault();
     try {
-      const res = await axios.post(
-        "https://shortener-url-jxfk.onrender.com/api/shorten",
-        {
-          longUrl,
-        }
-      );
+      const res = await axios.post("http://localhost:5000/api/shorten", {
+        longUrl,
+      });
       setShortUrl(res.data.shortUrl);
     } catch (err) {
       console.error("Error shortening URL:", err);

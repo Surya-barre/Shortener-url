@@ -5,7 +5,7 @@ const generateShortCode = () => Math.random().toString(36).substring(2, 8);
 
 export const shortenUrl = async (req, res) => {
   const { longUrl } = req.body;
-  console.log("reciverd lonul:",req.body)
+  // console.log("reciverd lonul:",req.body)
   try {
     // check if exists
     let existing = await Url.findOne({ originalUrl: longUrl });
