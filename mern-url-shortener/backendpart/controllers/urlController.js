@@ -40,6 +40,7 @@ export const redirectUrl = async (req, res) => {
     await urlEntry.save();
     res.redirect(urlEntry.originalUrl);
   } catch (error) {
+    console.error("❌ Error in redirectUrl:", error);
     res.status(500).json({ error: "Error retrieving URL" });
   }
 };
@@ -51,6 +52,7 @@ export const listUrls = async (req, res) => {
     const urls = await Url.find().sort({ createdAt: -1 });
     res.json(urls);
   } catch (error) {
+    console.error("❌ Error in listUrls:", error);
     res.status(500).json({ error: "Error fetching URLs" });
   }
 };
