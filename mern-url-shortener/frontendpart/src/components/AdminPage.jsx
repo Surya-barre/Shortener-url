@@ -3,13 +3,30 @@ import axios from "axios";
 
 export default function AdminPage() {
   const [urls, setUrls] = useState([]);
-  //https://shortener-url-jxfk.onrender.com
 
-  https: useEffect(() => {
+  // function to fetch URLs
+  const fetchUrls = () => {
     axios
       .get("http://localhost:5000/api/admin/list")
       .then((res) => setUrls(res.data))
       .catch((err) => console.error(err));
+  };
+
+  useEffect(() => {
+    fetchUrls();
+
+    // refresh when user returns to the tab
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchUrls(); // re-fetch data
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, []);
 
   return (

@@ -22,33 +22,33 @@ export default function UrlShortenerForm() {
     }
   };
 
-  // ⏳ Check after 30 seconds
+  // ⏳ Check after 10 seconds
   useEffect(() => {
     if (shortUrl) {
       const timer = setTimeout(() => {
         if (!clicked) {
           setShowPopup(true);
         }
-      }, 10000); // 30 seconds
-
+      }, 10000); // 10s
       return () => clearTimeout(timer);
     }
   }, [shortUrl, clicked]);
 
-  // 🔗 Handle link click
-  const handleLinkClick = () => {
+  // 🔗 Handle link click → redirect to original page
+  const handleLinkClick = (e) => {
     setClicked(true);
-    window.location.reload(true); // Refresh after clicking
+    // don’t reload, just let <a href> redirect
+    setShowPopup(false);
   };
 
-  // ❌ If popup shows and user ignores, reload after 10s
+  // ❌ If popup shows and user ignores → reload page
   useEffect(() => {
     if (showPopup && !clicked) {
       const reloadTimer = setTimeout(() => {
         if (!clicked) {
           window.location.reload(true);
         }
-      }, 5000); // wait 10s after popup before reload
+      }, 5000); // reload 5s after popup
       return () => clearTimeout(reloadTimer);
     }
   }, [showPopup, clicked]);
@@ -98,17 +98,13 @@ export default function UrlShortenerForm() {
               You haven’t clicked the link yet. Do you want to open it?
             </p>
             <button
-              onClick={() => {
-                setShowPopup(false);
-              }}
+              onClick={() => setShowPopup(false)}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg mr-2"
             >
               No, Stay
             </button>
             <button
-              onClick={() => {
-                window.location.reload(true);
-              }}
+              onClick={() => window.location.reload(true)}
               className="bg-red-600 text-white px-4 py-2 rounded-lg"
             >
               Reload Now
