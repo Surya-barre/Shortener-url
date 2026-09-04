@@ -4,28 +4,31 @@ import axios from "axios";
 export default function AdminPage() {
   const [urls, setUrls] = useState([]);
 
-  // function to fetch URLs
+  // Fetch all shortened URLs from backend
   const fetchUrls = () => {
     axios
-      .get("http://localhost:5000/api/admin/list")
+      .get("https://shortener-url-jxfk.onrender.com/api/admin/list")
       .then((res) => setUrls(res.data))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error("Error fetching URLs:", err));
   };
 
   useEffect(() => {
     fetchUrls();
 
-    // refresh when user returns to the tab
+    // Refresh data when user returns to the tab
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        fetchUrls(); // re-fetch data
+        fetchUrls();
       }
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibilityChange
+      );
     };
   }, []);
 
@@ -34,6 +37,7 @@ export default function AdminPage() {
       <h2 className="text-2xl font-bold mb-6 text-center text-purple-600">
         📊 Admin Dashboard
       </h2>
+
       <table className="w-full border border-gray-200 rounded-lg overflow-hidden shadow">
         <thead className="bg-gray-100">
           <tr>
@@ -42,11 +46,18 @@ export default function AdminPage() {
             <th className="p-3 text-center">Visits</th>
           </tr>
         </thead>
+
         <tbody>
           {urls.map((url) => (
             <tr key={url._id} className="border-t hover:bg-gray-50">
-              <td className="p-3 font-mono text-blue-600">{url.shortCode}</td>
-              <td className="p-3 break-all">{url.originalUrl}</td>
+              <td className="p-3 font-mono text-blue-600">
+                {url.shortCode}
+              </td>
+
+              <td className="p-3 break-all">
+                {url.originalUrl}
+              </td>
+
               <td className="p-3 text-center font-semibold">
                 {url.visitCount}
               </td>
