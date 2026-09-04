@@ -1,117 +1,70 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-export default function UrlShortenerForm() {
-  const [longUrl, setLongUrl] = useState("");
-  const [shortUrl, setShortUrl] = useState("");
-  const [showPopup, setShowPopup] = useState(false);
-  const [clicked, setClicked] = useState(false);
+export default function AdminPage() {
+  const [urls, setUrls] = useState([]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const res = await axios.post("http://localhost:5000/api/shorten", {
-        longUrl,
-      });
-      setShortUrl(res.data.shortUrl);
-      setLongUrl("");
-    } catch (err) {
-      console.error("Error shortening URL:", err);
-      alert(err.response?.data?.error || "Server error");
-    }
+  // Fetch all shortened URLs from backend
+  const fetchUrls = () => {
+    axios
+      .get("https://shortener-url-jxfk.onrender.com/api/admin/list")
+      .then((res) => setUrls(res.data))
+      .catch((err) => console.error("Error fetching URLs:", err));
   };
 
-  // ⏳ Check after 10 seconds
   useEffect(() => {
-    if (shortUrl) {
-      const timer = setTimeout(() => {
-        if (!clicked) {
-          setShowPopup(true);
-        }
-      }, 10000); // 10s
-      return () => clearTimeout(timer);
-    }
-  }, [shortUrl, clicked]);
+    fetchUrls();
 
-  // 🔗 Handle link click → redirect to original page
-  const handleLinkClick = (e) => {
-    setClicked(true);
-    // don’t reload, just let <a href> redirect
-    setShowPopup(false);
-  };
+    // Refresh data when user returns to the tab
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchUrls();
+      }
+    };
 
-  // ❌ If popup shows and user ignores → reload page
-  useEffect(() => {
-    if (showPopup && !clicked) {
-      const reloadTimer = setTimeout(() => {
-        if (!clicked) {
-          window.location.reload(true);
-        }
-      }, 5000); // reload 5s after popup
-      return () => clearTimeout(reloadTimer);
-    }
-  }, [showPopup, clicked]);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibilityChange
+      );
+    };
+  }, []);
 
   return (
-    <div className="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
-      <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">
-        🔗 URL Shortener
+    <div className="max-w-4xl mx-auto bg-white p-8 mt-10 rounded-2xl shadow-lg">
+      <h2 className="text-2xl font-bold mb-6 text-center text-purple-600">
+        📊 Admin Dashboard
       </h2>
-      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4">
-        <input
-          type="url"
-          value={longUrl}
-          onChange={(e) => setLongUrl(e.target.value)}
-          placeholder="Enter long URL"
-          required
-          className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-        >
-          Shorten
-        </button>
-      </form>
 
-      {shortUrl && (
-        <div className="mt-6 p-4 bg-green-100 rounded-lg text-center">
-          <p className="font-semibold">✅ Shortened URL:</p>
-          <a
-            href={shortUrl}
-            target="_blank"
-            rel="noreferrer"
-            onClick={handleLinkClick}
-            className="text-blue-600 underline break-all"
-          >
-            {shortUrl}
-          </a>
-        </div>
-      )}
+      <table className="w-full border border-gray-200 rounded-lg overflow-hidden shadow">
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="p-3 text-left">Short Code</th>
+            <th className="p-3 text-left">Original URL</th>
+            <th className="p-3 text-center">Visits</th>
+          </tr>
+        </thead>
 
-      {showPopup && !clicked && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-xl shadow-xl text-center">
-            <h3 className="text-lg font-bold mb-4">⚠️ Reminder</h3>
-            <p className="mb-4">
-              You haven’t clicked the link yet. Do you want to open it?
-            </p>
-            <button
-              onClick={() => setShowPopup(false)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg mr-2"
-            >
-              No, Stay
-            </button>
-            <button
-              onClick={() => window.location.reload(true)}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg"
-            >
-              Reload Now
-            </button>
-          </div>
-        </div>
-      )}
+        <tbody>
+          {urls.map((url) => (
+            <tr key={url._id} className="border-t hover:bg-gray-50">
+              <td className="p-3 font-mono text-blue-600">
+                {url.shortCode}
+              </td>
+
+              <td className="p-3 break-all">
+                {url.originalUrl}
+              </td>
+
+              <td className="p-3 text-center font-semibold">
+                {url.visitCount}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
